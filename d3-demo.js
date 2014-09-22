@@ -3,23 +3,65 @@
  */
 'use strict';
 
-var dataset = [1,2,3,4];
+
+/**
+ *  obj = {
+ *      totalrate: '80%',
+ *      nodedataset: [{}],
+ *      ratedataset: [{}]
+ *  }
+ *
+ */
+var nodedataset = [{
+    name: 'helloworld',
+    visits: 1000,
+    pv: 1000,
+    uv: 500
+},{
+    name: 'helloworld',
+    visits: 1000,
+    pv: 1000,
+    uv: 500
+},{
+    name: 'helloworld',
+    visits: 1000,
+    pv: 0,
+    uv: 0
+}];
+var ratedataset =  [{
+    trans_rate: '40%'
+},{
+    trans_rate: '20%'
+}];
+var totalrate = '10%';
+
+function isLastStepAction(nodedataset) {
+    if (! nodedataset[nodedataset.length - 1].pv) {
+        var tmp = [];
+        for (var i = 0; i <= nodedataset.length - 1; i++) {
+            tmp.push(nodedataset[i])
+        }
+        tmp.pop();
+        return tmp;
+    } else {
+        return nodedataset;
+    }
+}
 
 var svg = d3.select('svg');
 
 var tip = d3.tip()
     .attr('class', 'd3-tip')
     .html(function(d, i) {
-        return "<strong>第" + (i+1) + "步: </strong><span style='color:red'>" + d + "</span>";
+        return "<strong>第" + (i+1) + "步: </strong><span style='color:red'>" + d.name + "</span>";
     });
-
 svg.call(tip);
 
 // 画梯形
 svg
     .append('g')
     .selectAll('polygon')
-    .data(dataset)
+    .data(nodedataset)
     .enter()
     .append('polygon')
     .attr('points', function(d, i) {
@@ -37,7 +79,7 @@ svg
 svg
     .append('g')
     .selectAll('rect')
-    .data([1,2,3])
+    .data(ratedataset)
     .enter()
     .append('rect')
     .attr('x', '150')
@@ -52,7 +94,7 @@ svg
 svg
     .append('g')
     .selectAll('polygon')
-    .data([1,2,3])
+    .data(ratedataset)
     .enter()
     .append('polygon')
     .attr('points', function (d, i) {
@@ -67,7 +109,7 @@ svg
 svg
     .append('g')
     .selectAll('line')
-    .data(dataset)
+    .data(isLastStepAction(nodedataset))
     .enter()
     .append('line')
     .attr('x1', '350')
@@ -84,7 +126,7 @@ svg
 svg
     .append('g')
     .selectAll('path')
-    .data(dataset)
+    .data(isLastStepAction(nodedataset))
     .enter()
     .append('path')
     .attr('d', function (d, i) {
@@ -100,7 +142,7 @@ svg
 svg
     .append('g')
     .selectAll('rect')
-    .data(dataset)
+    .data(isLastStepAction(nodedataset))
     .enter()
     .append('rect')
     .attr('x', '550')
@@ -118,7 +160,7 @@ svg
 svg
     .append('g')
     .append('text')
-    .text('总转化率为: 40%')
+    .text('总转化率为: ' + totalrate)
     .attr('x', '110')
     .attr('y', '25');
 
@@ -126,11 +168,11 @@ svg
 svg
     .append('g')
     .selectAll('text')
-    .data(dataset)
+    .data(nodedataset)
     .enter()
     .append('text')
     .text(function (d ,i) {
-        return '第' + i + '步, 访问数为: ' + d;
+        return '第' + (i+1) + '步, 访问数为: ' + d.visits;
     })
     .attr('x', '80')
     .attr('y', function (d, i) {
@@ -141,11 +183,11 @@ svg
 svg
     .append('g')
     .selectAll('text')
-    .data([1,2,3])
+    .data(ratedataset)
     .enter()
     .append('text')
     .text(function (d ,i) {
-        return '转化率:' + i;
+        return '转化率:' + d.trans_rate;
     })
     .attr('x', '250')
     .attr('y', function (d, i) {
@@ -155,11 +197,11 @@ svg
 svg
     .append('g')
     .selectAll('text')
-    .data(dataset)
+    .data(isLastStepAction(nodedataset))
     .enter()
     .append('text')
     .text(function (d ,i) {
-        return 'uv:' + i*1000000 + ' pv:' + i * 1000000;
+        return 'uv:' + d.pv + ' pv:' + d.uv;
     })
     .attr('x', '560')
     .attr('y', function (d, i) {
